@@ -1,0 +1,36 @@
+{
+    "name": "rezzza/shorty-bundle",
+    "description": "Underwear for your long urls in Symfony",
+    "keywords": ["shorty", "symfony", "bundle", "url", "shortener"],
+    "type": "symfony-bundle",
+    "homepage": "https://github.com/rezzza/ShortyBundle",
+    "license": "MIT",
+    "authors": [{
+        "name": "Jérémy Romey",
+        "email": "jeremy@free-agent.fr"
+    },{
+        "name": "Contributors",
+        "homepage": "https://github.com/rezzza/ShortyBundle/contributors"
+    }],
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/framework-bundle": "2.*",
+        "rezzza/shorty": "1.0.*"
+    },
+    "require-dev": {
+        "atoum/atoum-bundle": "dev-master"
+    },
+    "autoload":     {
+        "psr-0": { "Rezzza\\ShortyBundle": "" }
+    },
+    "target-dir": "Rezzza/ShortyBundle",
+    "minimum-stability": "dev",
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
