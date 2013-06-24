@@ -4,11 +4,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <services>
-        <service id="rezzza.shorty.google" class="Rezzza\Shorty\Google">
-            <argument>%rezzza_shorty.google.key%</argument>
-            <argument>%rezzza_shorty.google.format%</argument>
-        </service>
-    </services>
+    <parameters>
+        <parameter key="rezzza.shorty.google.class">Rezzza\Shorty\Provider\Google</parameter>
+    </parameters>
 
 </container>
