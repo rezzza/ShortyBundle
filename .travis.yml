@@ -7,3 +7,10 @@ php:
 before_script:
     - wget http://getcomposer.org/composer.phar
     - php composer.phar install --dev
+
+notifications:
+    email:
+        recipients:
+            - ci@verylastroom.com
+        on_success: change
+        on_failure: change
