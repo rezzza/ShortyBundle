@@ -56,7 +56,7 @@ class Configuration extends Test
             'providers' => array(
                 'google' => array(
                     'key' => null,
-                    'http_adapter' => 'Rezzza\Shorty\Http\GuzzleAdapter',
+                    'http_adapter' => 'Rezzza\Shorty\Http\CurlAdapter',
                 )
             )
         ));
@@ -115,7 +115,7 @@ class Configuration extends Test
             'providers' => array(
                 'bitly' => array(
                     'access_token' => 'foo',
-                    'http_adapter' => 'Rezzza\Shorty\Http\GuzzleAdapter',
+                    'http_adapter' => 'Rezzza\Shorty\Http\CurlAdapter',
                 )
             )
         ));
@@ -160,11 +160,11 @@ class Configuration extends Test
             'providers' => array(
                 'google' => array(
                     'key' => null,
-                    'http_adapter' => 'Rezzza\Shorty\Http\GuzzleAdapter',
+                    'http_adapter' => 'Rezzza\Shorty\Http\CurlAdapter',
                 ),
                 'bitly' => array(
                     'access_token' => 'foo',
-                    'http_adapter' => 'Rezzza\Shorty\Http\GuzzleAdapter',
+                    'http_adapter' => 'Rezzza\Shorty\Http\CurlAdapter',
                 )
             )
         ));
