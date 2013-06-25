@@ -6,6 +6,7 @@
 
     <parameters>
         <parameter key="rezzza.shorty.google.class">Rezzza\Shorty\Provider\Google</parameter>
+        <parameter key="rezzza.shorty.bitly.class">Rezzza\Shorty\Provider\Bitly</parameter>
     </parameters>
 
 </container>

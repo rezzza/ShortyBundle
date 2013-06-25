@@ -31,6 +31,9 @@ class RezzzaShortyExtension extends Extension
                 case 'google':
                     $providerDefinition = new Definition($class, array($data['key']));
                     break;
+                case 'bitly':
+                    $providerDefinition = new Definition($class, array($data['access_token']));
+                    break;
                 default:
                     throw new \InvalidArgumentException('Unsupported provider');
                     break;
