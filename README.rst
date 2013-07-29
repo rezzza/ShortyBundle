@@ -53,7 +53,7 @@ Basic usage
     $shorty = $this->container->get('rezzza.shorty.google');
     try {
         $short  = $shorty->shorten('http://www.verylastroom.net');
-        $long   = $shorty->expand($long);
+        $long   = $shorty->expand($short);
     } catch (\Rezzza\Shorty\Exception\Exception $e) {
         // oops ...
     }
