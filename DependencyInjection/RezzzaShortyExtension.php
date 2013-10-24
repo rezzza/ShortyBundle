@@ -7,6 +7,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * @author Jérémy Romey <jeremy@free-agent.fr>
@@ -24,24 +25,36 @@ class RezzzaShortyExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('shorty.xml');
 
-        foreach ($config['providers'] as $provider => $data) {
-            $class              = $container->getParameter(sprintf('rezzza.shorty.%s.class', $provider));
+        $providers = $config['providers'];
 
-            switch ($provider) {
-                case 'google':
-                    $providerDefinition = new Definition($class, array($data['key']));
-                    break;
-                case 'bitly':
-                    $providerDefinition = new Definition($class, array($data['access_token']));
-                    break;
-                default:
-                    throw new \InvalidArgumentException('Unsupported provider');
-                    break;
+        if (isset($providers['google'])) {
+            $definition = new Definition(
+                $container->getParameter('rezzza.shorty.google.class'),
+                array($providers['google']['key'])
+            );
+            $definition->addMethodCall('setHttpAdapter', array(new Definition($providers['google']['http_adapter'])));
+            $container->setDefinition('rezzza.shorty.google', $definition);
+        }
+
+        if (isset($providers['bitly'])) {
+            $definition = new Definition(
+                $container->getParameter('rezzza.shorty.bitly.class'),
+                array($providers['bitly']['access_token'])
+            );
+            $definition->addMethodCall('setHttpAdapter', array(new Definition($providers['bitly']['http_adapter'])));
+            $container->setDefinition('rezzza.shorty.bitly', $definition);
+        }
+
+        if (isset($providers['chain'])) {
+            $definition = new Definition($container->getParameter('rezzza.shorty.chain.class'));
+            foreach ($providers['chain']['providers'] as $provider) {
+                $definition->addMethodCall('addProvider', array(new Reference(sprintf('rezzza.shorty.%s', $provider))));
             }
+            $container->setDefinition('rezzza.shorty.chain', $definition);
+        }
 
-            $providerDefinition->addMethodCall('setHttpAdapter', array(new Definition($data['http_adapter'])));
-
-            $container->setDefinition(sprintf('rezzza.shorty.%s', $provider), $providerDefinition);
+        if (isset($config['default_provider'])) {
+            $container->setAlias('rezzza.shorty', sprintf('rezzza.shorty.%s', $config['default_provider']));
         }
     }
 }

@@ -5,8 +5,9 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="rezzza.shorty.google.class">Rezzza\Shorty\Provider\Google</parameter>
         <parameter key="rezzza.shorty.bitly.class">Rezzza\Shorty\Provider\Bitly</parameter>
+        <parameter key="rezzza.shorty.chain.class">Rezzza\Shorty\Provider\Chain</parameter>
+        <parameter key="rezzza.shorty.google.class">Rezzza\Shorty\Provider\Google</parameter>
     </parameters>
 
 </container>
