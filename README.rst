@@ -21,7 +21,7 @@ In your ``composer.json`` you should have:
 
     {
         "require": {
-            "rezzza/shorty-bundle": "1.0.*"
+            "rezzza/shorty-bundle": "1.1.*"
         }
     }
 
@@ -37,6 +37,7 @@ Configuration
 .. code-block:: yaml
 
     rezzza_shorty:
+        default_provider: google
         providers:
             google:
                 key: ~
@@ -44,6 +45,8 @@ Configuration
             bitly:
                 access_token: ~ #required
                 http_adapter: ~ # default is Rezzza\Shorty\Http\CurlAdapter
+            chain:
+                providers: [google, bitly]
 
 Basic usage
 -----------
@@ -51,9 +54,11 @@ Basic usage
 .. code-block:: php
 
     $shorty = $this->container->get('rezzza.shorty.google');
+    // or
+    $shorty = $this->container->get('rezzza.shorty'); // will use default_provider.
     try {
         $short  = $shorty->shorten('http://www.verylastroom.net');
-        $long   = $shorty->expand($short);
+        $long   = $shorty->expand($long);
     } catch (\Rezzza\Shorty\Exception\Exception $e) {
         // oops ...
     }

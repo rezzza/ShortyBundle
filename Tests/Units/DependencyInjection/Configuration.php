@@ -55,7 +55,6 @@ class Configuration extends Test
         ->isEqualTo(array(
             'providers' => array(
                 'google' => array(
-                    'key' => null,
                     'http_adapter' => 'Rezzza\Shorty\Http\CurlAdapter',
                 )
             )
@@ -142,6 +141,66 @@ class Configuration extends Test
         ));
     }
 
+    public function testChainProvider()
+    {
+        $self = $this;
+        $this->exception(function() use ($self) {
+            $self->processConfiguration(array(
+                array(
+                    'providers' => array(
+                        'chain' => array(
+                        )
+                    )
+                )
+            ));
+        })
+            ->isInstanceOf('\Symfony\Component\Config\Definition\Exception\InvalidConfigurationException')
+            ->hasMessage('The child node "providers" at path "rezzza_shorty.providers.chain" must be configured.');
+
+        $self = $this;
+        $this->exception(function() use ($self) {
+            $self->processConfiguration(array(
+                array(
+                    'providers' => array(
+                        'chain' => array(
+                            'providers' => array('unkown')
+                        )
+                    )
+                )
+            ));
+        })
+            ->isInstanceOf('\Symfony\Component\Config\Definition\Exception\InvalidConfigurationException')
+            ->hasMessage('Invalid configuration for path "rezzza_shorty.providers": RezzzaShorty - A provider defined in chain is not exists.');
+
+
+        $this->array(
+            $this->processConfiguration(array(
+                array(
+                    'providers' => array(
+                        'bitly' => array(
+                            'access_token' => 'foo'
+                        ),
+                        'chain' => array(
+                            'providers' => array('bitly')
+                        )
+                    )
+                )
+            ))
+        )
+        ->isEqualTo(array(
+            'providers' => array(
+                'bitly' => array(
+                    'access_token' => 'foo',
+                    'http_adapter' => 'Rezzza\Shorty\Http\CurlAdapter',
+                ),
+                'chain' => array(
+                    'providers' => array('bitly')
+                ),
+            )
+        ));
+    }
+
+
     public function testAll()
     {
         $this->array(
@@ -151,7 +210,10 @@ class Configuration extends Test
                         'google' => array(),
                         'bitly' => array(
                             'access_token' => 'foo',
-                        )
+                        ),
+                        'chain' => array(
+                            'providers' => array('bitly', 'google')
+                        ),
                     )
                 )
             ))
@@ -159,13 +221,15 @@ class Configuration extends Test
         ->isEqualTo(array(
             'providers' => array(
                 'google' => array(
-                    'key' => null,
                     'http_adapter' => 'Rezzza\Shorty\Http\CurlAdapter',
                 ),
                 'bitly' => array(
                     'access_token' => 'foo',
                     'http_adapter' => 'Rezzza\Shorty\Http\CurlAdapter',
-                )
+                ),
+                'chain' => array(
+                    'providers' => array('bitly', 'google')
+                ),
             )
         ));
     }

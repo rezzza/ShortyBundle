@@ -15,7 +15,7 @@
     "require": {
         "php": ">=5.3.3",
         "symfony/framework-bundle": "~2.2",
-        "rezzza/shorty": "1.0.*"
+        "rezzza/shorty": "~1.1"
     },
     "require-dev": {
         "atoum/atoum-bundle": "dev-master"
@@ -30,7 +30,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "dev-master": "1.1.x-dev"
         }
     }
 }

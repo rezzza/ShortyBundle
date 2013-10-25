@@ -20,11 +20,26 @@ class Configuration implements ConfigurationInterface
         $treeBuilder
             ->root('rezzza_shorty')
                 ->children()
+                    ->scalarNode('default_provider')->end()
                     ->arrayNode('providers')
+                        ->validate()
+                            ->ifTrue(function($v) {
+                                if (!isset($v['chain'])) {
+                                    return false;
+                                }
+
+                                foreach ($v['chain']['providers'] as $provider) {
+                                    if (!isset($v[$provider])) {
+                                        return true;
+                                    }
+                                }
+                            })
+                            ->thenInvalid('RezzzaShorty - A provider defined in chain is not exists.')
+                        ->end()
                         ->children()
                             ->arrayNode('google')
                                 ->children()
-                                    ->scalarNode('key')->defaultValue(null)->end()
+                                    ->scalarNode('key')->end()
                                     ->scalarNode('http_adapter')->defaultValue('Rezzza\Shorty\Http\CurlAdapter')->end()
                                 ->end()
                             ->end()
@@ -32,6 +47,15 @@ class Configuration implements ConfigurationInterface
                                 ->children()
                                     ->scalarNode('access_token')->isRequired()->cannotBeEmpty()->end()
                                     ->scalarNode('http_adapter')->defaultValue('Rezzza\Shorty\Http\CurlAdapter')->end()
+                                ->end()
+                            ->end()
+                            ->arrayNode('chain')
+                                ->children()
+                                    ->arrayNode('providers')
+                                        ->isRequired()
+                                        ->cannotBeEmpty()
+                                        ->prototype('scalar')->end()
+                                    ->end()
                                 ->end()
                             ->end()
                         ->end()
