@@ -25,7 +25,7 @@ class RezzzaShortyExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('shorty.xml');
 
-        $providers = $config['providers'];
+        $providers = isset($config['providers']) ? $config['providers'] : array();
 
         if (isset($providers['google'])) {
             $definition = new Definition(
