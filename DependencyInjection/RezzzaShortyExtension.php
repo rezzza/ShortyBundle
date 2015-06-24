@@ -25,36 +25,38 @@ class RezzzaShortyExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('shorty.xml');
 
-        $providers = isset($config['providers']) ? $config['providers'] : array();
-
-        if (isset($providers['google'])) {
-            $definition = new Definition(
-                $container->getParameter('rezzza.shorty.google.class'),
-                array($providers['google']['key'])
-            );
-            $definition->addMethodCall('setHttpAdapter', array(new Definition($providers['google']['http_adapter'])));
-            $container->setDefinition('rezzza.shorty.google', $definition);
-        }
-
-        if (isset($providers['bitly'])) {
-            $definition = new Definition(
-                $container->getParameter('rezzza.shorty.bitly.class'),
-                array($providers['bitly']['access_token'])
-            );
-            $definition->addMethodCall('setHttpAdapter', array(new Definition($providers['bitly']['http_adapter'])));
-            $container->setDefinition('rezzza.shorty.bitly', $definition);
-        }
-
-        if (isset($providers['chain'])) {
-            $definition = new Definition($container->getParameter('rezzza.shorty.chain.class'));
-            foreach ($providers['chain']['providers'] as $provider) {
-                $definition->addMethodCall('addProvider', array(new Reference(sprintf('rezzza.shorty.%s', $provider))));
+        foreach ($config['providers'] as $providerName => $providerConfiguration) {
+            switch ($providerConfiguration['id']) {
+                case 'google':
+                    $definition = new Definition($container->getParameter('rezzza.shorty.google.class'), array($providerConfiguration['key']));
+                    $definition->addMethodCall('setHttpAdapter', array(new Definition($providerConfiguration['http_adapter'])));
+                    $container->setDefinition($this->getShortyProviderName($providerName), $definition);
+                    break;
+                case 'bitly':
+                    $definition = new Definition($container->getParameter('rezzza.shorty.bitly.class'), array($providerConfiguration['access_token']));
+                    $definition->addMethodCall('setHttpAdapter', array(new Definition($providerConfiguration['http_adapter'])));
+                    $container->setDefinition($this->getShortyProviderName($providerName), $definition);
+                    break;
+                case 'chain':
+                    $definition = new Definition($container->getParameter('rezzza.shorty.chain.class'));
+                    foreach ($providerConfiguration['providers'] as $provider) {
+                        $definition->addMethodCall('addProvider', array(new Reference($this->getShortyProviderName($provider))));
+                    }
+                    $container->setDefinition($this->getShortyProviderName($providerName), $definition);
+                    break;
+                default:
+                    $container->setAlias($this->getShortyProviderName($providerName), $providerConfiguration['id']);
+                    break;
             }
-            $container->setDefinition('rezzza.shorty.chain', $definition);
         }
 
         if (isset($config['default_provider'])) {
-            $container->setAlias('rezzza.shorty', sprintf('rezzza.shorty.%s', $config['default_provider']));
+            $container->setAlias('rezzza.shorty', $this->getShortyProviderName($config['default_provider']));
         }
+    }
+
+    private function getShortyProviderName($name)
+    {
+        return sprintf('rezzza.shorty.%s', $name);
     }
 }

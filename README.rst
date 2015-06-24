@@ -21,7 +21,7 @@ In your ``composer.json`` you should have:
 
     {
         "require": {
-            "rezzza/shorty-bundle": "1.1.*"
+            "rezzza/shorty-bundle": "2.0.*"
         }
     }
 
@@ -40,13 +40,21 @@ Configuration
         default_provider: google
         providers:
             google:
+                id: google
                 key: ~
                 http_adapter: ~ # default is Rezzza\Shorty\Http\CurlAdapter
+            google2:
+                id: google
+                key: anotherkey
             bitly:
+                id: bitly
                 access_token: ~ #required
                 http_adapter: ~ # default is Rezzza\Shorty\Http\CurlAdapter
+            custom:
+                id: my_custom_service
             chain:
-                providers: [google, bitly]
+                id: chain
+                providers: [google, bitly, custom, google2]
 
 Basic usage
 -----------
