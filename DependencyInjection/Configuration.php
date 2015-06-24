@@ -4,6 +4,7 @@ namespace Rezzza\ShortyBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 /**
  * @author Jérémy Romey <jeremy@free-agent.fr>
@@ -22,40 +23,45 @@ class Configuration implements ConfigurationInterface
                 ->children()
                     ->scalarNode('default_provider')->end()
                     ->arrayNode('providers')
+                        ->useAttributeAsKey('providerName')
                         ->validate()
-                            ->ifTrue(function($v) {
-                                if (!isset($v['chain'])) {
-                                    return false;
-                                }
+                            ->always(function($providers) {
+                                foreach ($providers as $name => $provider) {
+                                    switch ($provider['id']) {
+                                        case 'bitly':
+                                            if (false === isset($provider['access_token'])) {
+                                                throw new InvalidConfigurationException('“access_token“ node in “bitly“ provider is required.');
+                                            }
+                                            break;
+                                        case 'chain':
+                                            if (empty($provider['providers'])) {
+                                                throw new InvalidConfigurationException('“providers“ node in “chain“ provider is required.');
+                                            }
 
-                                foreach ($v['chain']['providers'] as $provider) {
-                                    if (!isset($v[$provider])) {
-                                        return true;
+                                            foreach ($provider['providers'] as $providerName) {
+                                                if (false === array_key_exists($providerName, $providers)) {
+                                                    throw new InvalidConfigurationException(sprintf('provider “%s“ is unknown in “chain“ provider.', $providerName));
+                                                }
+
+                                                if ($providerName === $name) {
+                                                    throw new InvalidConfigurationException(sprintf('Provider “%s“ is a circular reference, remove it from “%s“ provider.', $providerName, $providerName));
+                                                }
+                                            }
+                                            break;
                                     }
                                 }
+
+                                return $providers;
                             })
-                            ->thenInvalid('RezzzaShorty - A provider defined in chain is not exists.')
                         ->end()
-                        ->children()
-                            ->arrayNode('google')
-                                ->children()
-                                    ->scalarNode('key')->end()
-                                    ->scalarNode('http_adapter')->defaultValue('Rezzza\Shorty\Http\CurlAdapter')->end()
-                                ->end()
-                            ->end()
-                            ->arrayNode('bitly')
-                                ->children()
-                                    ->scalarNode('access_token')->isRequired()->cannotBeEmpty()->end()
-                                    ->scalarNode('http_adapter')->defaultValue('Rezzza\Shorty\Http\CurlAdapter')->end()
-                                ->end()
-                            ->end()
-                            ->arrayNode('chain')
-                                ->children()
-                                    ->arrayNode('providers')
-                                        ->isRequired()
-                                        ->cannotBeEmpty()
-                                        ->prototype('scalar')->end()
-                                    ->end()
+                        ->prototype('array')
+                            ->children()
+                                ->scalarNode('id')->isRequired()->end()
+                                ->scalarNode('http_adapter')->defaultValue('Rezzza\Shorty\Http\CurlAdapter')->end()
+                                ->scalarNode('key')->end()
+                                ->scalarNode('access_token')->end()
+                                ->arrayNode('providers')
+                                    ->prototype('scalar')->end()
                                 ->end()
                             ->end()
                         ->end()
