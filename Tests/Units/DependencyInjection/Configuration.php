@@ -4,7 +4,7 @@ namespace Rezzza\ShortyBundle\Tests\Units\DependencyInjection;
 
 require_once __DIR__."/../../../vendor/autoload.php";
 
-use atoum\AtoumBundle\Test\Units\Test;
+use mageekguy\atoum;
 use Rezzza\ShortyBundle\DependencyInjection\Configuration as ConfigurationTested;
 use Symfony\Component\Config\Definition\Processor;
 
@@ -14,7 +14,7 @@ use Symfony\Component\Config\Definition\Processor;
  * @uses Test
  * @author Stephane PY <py.stephane1@gmail.com>
  */
-class Configuration extends Test
+class Configuration extends atoum\test
 {
     public function testNoConfiguration()
     {
